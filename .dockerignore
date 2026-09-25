@@ -1,0 +1,12 @@
+.git
+.openai/*.local.json
+.wrangler
+.vinext
+dist
+node_modules
+outputs
+work
+agent/bin
+*.log
+*.tsbuildinfo
+.env

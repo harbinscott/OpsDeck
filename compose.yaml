@@ -1,0 +1,42 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: deploy/dashboard/Dockerfile
+    container_name: opsdeck-dashboard
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      OPSDECK_PORT: ${OPSDECK_PORT:-9095}
+      OPSDECK_BIND_ADDRESS: ${OPSDECK_BIND_ADDRESS:-127.0.0.1}
+      OPSDECK_AGENT_URL: http://127.0.0.1:9040
+      OPSDECK_AGENT_TOKEN: ${OPSDECK_AGENT_TOKEN:?Copy OPSDECK_AGENT_TOKEN from /etc/opsdeck/agent.env}
+      OPSDECK_AUTH_PROVIDER: ${OPSDECK_AUTH_PROVIDER:-pam}
+      OPSDECK_ADMIN_SECRET: ${OPSDECK_ADMIN_SECRET:-}
+      OPSDECK_SESSION_SECRET: ${OPSDECK_SESSION_SECRET:?Run the OpsDeck agent installer to create OPSDECK_SESSION_SECRET}
+      OPSDECK_ELEVATION_TIMEOUT_SECONDS: ${OPSDECK_ELEVATION_TIMEOUT_SECONDS:-900}
+      OPSDECK_CONFIG_PATH: /var/lib/opsdeck/dashboard.json
+      VINEXT_TRUST_PROXY: ${VINEXT_TRUST_PROXY:-1}
+      VINEXT_TRUSTED_HOSTS: ${VINEXT_TRUSTED_HOSTS:-}
+    volumes:
+      - opsdeck-data:/var/lib/opsdeck
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:' + process.env.OPSDECK_PORT + '/api/health').then((response) => { if (!response.ok) process.exit(1); }).catch(() => process.exit(1));
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  opsdeck-data:

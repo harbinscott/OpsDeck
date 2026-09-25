@@ -1,0 +1,14 @@
+[Unit]
+Description=OpsDeck PAM authentication socket
+
+[Socket]
+ListenStream=/run/opsdeck/auth.sock
+SocketUser=root
+SocketGroup=opsdeck-agent
+SocketMode=0660
+DirectoryMode=0750
+RemoveOnStop=true
+Accept=yes
+
+[Install]
+WantedBy=sockets.target

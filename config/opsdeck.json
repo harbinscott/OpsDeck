@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "host": {
+    "displayName": ""
+  },
+  "applications": [],
+  "containerAliases": {},
+  "settings": {
+    "refreshIntervalSeconds": 10,
+    "elevationTimeoutSeconds": 900,
+    "managedServices": [
+      "docker.service",
+      "nginx.service"
+    ]
+  },
+  "savedLogViews": []
+}

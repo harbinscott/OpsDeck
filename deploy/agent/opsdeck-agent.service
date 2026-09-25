@@ -1,0 +1,34 @@
+[Unit]
+Description=OpsDeck constrained host agent
+After=network-online.target docker.service opsdeck-auth.socket opsdeck-control.socket
+Wants=network-online.target opsdeck-auth.socket opsdeck-control.socket
+
+[Service]
+Type=simple
+User=opsdeck-agent
+Group=opsdeck-agent
+SupplementaryGroups=docker systemd-journal adm
+EnvironmentFile=/etc/opsdeck/agent.env
+ExecStart=/usr/local/bin/opsdeck-agent
+Restart=on-failure
+RestartSec=3s
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
